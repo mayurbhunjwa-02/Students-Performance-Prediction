@@ -23,11 +23,10 @@ if st.button("Predict"):
     st.subheader(f"Predicted Final Grade: {round(prediction,2)}")
 
     # performance category
-    if prediction >= 75:
+    if prediction >= 70:
         st.success("Excellent Performance")
     elif prediction >= 50:
         st.warning("Average Performance")
     else:
         st.error("Low Performance")
 
-print(model.coef_)
