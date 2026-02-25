@@ -2,129 +2,32 @@ import streamlit as st
 import pickle
 import numpy as np
 
-# ---------------- PAGE SETTINGS ----------------
-st.set_page_config(
-    page_title="Student Performance Prediction",
-    page_icon="🎓",
-    layout="centered"
-)
+# load model
+model = pickle.load(open("model.pkl","rb"))
 
-# ---------------- LOAD MODEL ----------------
-model = pickle.load(open("model.pkl", "rb"))
-
-# ---------------- TITLE ----------------
 st.title("🎓 Student Performance Prediction")
-st.write("Enter student details to predict Final Grade")
 
-st.divider()
+st.write("Enter student details")
 
-# ---------------- INPUT SECTION ----------------
-col1, col2 = st.columns(2)
+# inputs
+study_hour = st.number_input("Study Hour", 0.0, 15.0)
+attendence = st.number_input("Attendence (%)", 0.0, 100.0)
+mathscore = st.number_input("Math Score", 0.0, 100.0)
 
-with col1:
-    study_hour = st.number_input(
-        "Study Hour",
-        min_value=0.0,
-        placeholder="Enter study hours"
-    )
+if st.button("Predict"):
 
-    attendence = st.number_input(
-        "Attendence (%)",
-        min_value=0.0,
-        max_value=100.0,
-        placeholder="Enter attendence"
-    )
+    features = np.array([[study_hour, attendence, mathscore]])
 
-with col2:
-    mathscore = st.number_input(
-        "Math Score",
-        min_value=0.0,
-        max_value=100.0,
-        placeholder="Enter math score"
-    )
+    prediction = model.predict(features)[0]
 
-st.divider()
+    st.subheader(f"Predicted Final Grade: {round(prediction,2)}")
 
-# ---------------- PREDICTION ----------------
-if st.button("Predict Final Grade 🚀"):
-
-    input_data = np.array([[study_hour, attendence, mathscore]])
-
-    prediction = model.predict(input_data)
-
-    result = prediction[0]
-
-    st.success(f"📊 Predicted Final Grade: {round(result,2)}")
-
-    # Extra feedback (looks professional in presentation)
-    if result >= 75:
-        st.info("🌟 Excellent Performance Expected")
-    elif result >= 50:
-        st.warning("👍 Average Performance Expected")
+    # performance category
+    if prediction >= 75:
+        st.success("Excellent Performance")
+    elif prediction >= 50:
+        st.warning("Average Performance")
     else:
-        st.error("⚠️ Performance May Be Low")
-import streamlit as st
-import pickle
-import numpy as np
+        st.error("Low Performance")
 
-# ---------------- PAGE SETTINGS ----------------
-st.set_page_config(
-    page_title="Student Performance Prediction",
-    page_icon="🎓",
-    layout="centered"
-)
-
-# ---------------- LOAD MODEL ----------------
-model = pickle.load(open("model.pkl", "rb"))
-
-# ---------------- TITLE ----------------
-st.title("🎓 Student Performance Prediction")
-st.write("Enter student details to predict Final Grade")
-
-st.divider()
-
-# ---------------- INPUT SECTION ----------------
-col1, col2 = st.columns(2)
-
-with col1:
-    study_hour = st.number_input(
-        "Study Hour",
-        min_value=0.0,
-        placeholder="Enter study hours"
-    )
-
-    attendence = st.number_input(
-        "Attendence (%)",
-        min_value=0.0,
-        max_value=100.0,
-        placeholder="Enter attendence"
-    )
-
-with col2:
-    mathscore = st.number_input(
-        "Math Score",
-        min_value=0.0,
-        max_value=100.0,
-        placeholder="Enter math score"
-    )
-
-st.divider()
-
-# ---------------- PREDICTION ----------------
-if st.button("Predict Final Grade 🚀"):
-
-    input_data = np.array([[study_hour, attendence, mathscore]])
-
-    prediction = model.predict(input_data)
-
-    result = prediction[0]
-
-    st.success(f"📊 Predicted Final Grade: {round(result,2)}")
-
-    # Extra feedback (looks professional in presentation)
-    if result >= 75:
-        st.info("🌟 Excellent Performance Expected")
-    elif result >= 50:
-        st.warning("👍 Average Performance Expected")
-    else:
-        st.error("⚠️ Performance May Be Low")
+print(model.coef_)
